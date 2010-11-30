@@ -406,7 +406,7 @@ begin
     raise exception ''No object type named "%" exists'',p_type;
   end if;
 
-  v_view := p_type || ''_v'';
+  v_view := replace(p_type, '':'', ''_'') || ''_v'';
 
   delete from acs_views where object_view = v_view;
 
@@ -470,7 +470,7 @@ begin
     end loop;
   end loop;
 
-  perform acs_view__create_sql_view(p_type || ''_v'');
+  perform acs_view__create_sql_view(replace(p_type, '':'', ''_'') || ''_v'');
 
   -- Now fix all subtypes (really only necessary for the attributes view when an attribute
   -- has been added or dropped, but there is no harm in doing it always).  The supertype
