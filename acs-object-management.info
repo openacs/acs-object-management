@@ -17,8 +17,8 @@
         <maturity>0</maturity>
 
         <provides url="acs-object-management" version="0.0.2d1"/>
-        <requires url="acs-templating" version="5.7.0d1">
-        <requires url="acs-kernel" version="5.7.0d1">
+        <requires url="acs-templating" version="5.7.0d1"/>
+        <requires url="acs-kernel" version="5.7.0d1"/>
 
         <callbacks>
         </callbacks>
