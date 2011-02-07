@@ -2,7 +2,7 @@ drop table acs_view_attribute_widget_params;
 drop table acs_view_attribute_widgets;
 drop table acs_form_widget_params;
 drop table acs_form_default_widgets;
-drop table acs_form_widgets;
+drop table acs_form_widgets cascade;
 drop table acs_view_attributes;
 drop table acs_views;
 
