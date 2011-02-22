@@ -1,8 +1,10 @@
--- Some of these should probably be objects, but I'll worry about that later.
+-- These won't go into acs-templating at this point, as they're just additions
+-- and some should probably be objects, and there may need to be additional
+-- support for other types and the like.
 
 create table acs_form_widgets (
   widget           text
-                   constraint acs_form_widgets_pk
+                   constraint acs_form_widgets_widget_pk
 		           primary key
 );
 

@@ -32,6 +32,9 @@ ad_proc form::get_attributes {
     -array:required
     -form
 } {
+    Fills the target array with attribute data pulled from the given form (defaults to
+    the default form for the object view).
+} {
 
     if { ![info exists form] } {
         set form $object_view
