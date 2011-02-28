@@ -48,7 +48,8 @@ ad_proc form::get_attributes {
             -array attr
         set value [template::element::get_value $form $attr(view_attribute)]
         if { [llength [info procs ::template::data::to_sql::${attr(datatype)}]] } {
-            set value [template::data::to_sql::${attr(datatype)} $value]
+            set value [db_string q \
+                "select [template::data::to_sql::${attr(datatype)} $value] from dual"]
         } else {
             set value "$value"
         }

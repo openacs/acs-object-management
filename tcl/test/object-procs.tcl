@@ -100,7 +100,7 @@ aa_register_case -cats {api db smoke} object_attributes_datatypes {
             ad_form -name $view_name \
                 -form $form_part
             
-            foreach {a v} [list s string b 0 n 1000 i 1000000 m 10.00 d 2010-01-01 ts "2010-01-01 00:00:00" td "2010-01-01 00:00:00" t "text" rt "'Single quoted string'"] {
+            foreach {a v} [list s string b 0 n 1000 i 1000000 m 10.00 d [list 2010 01 01] ts [list 2010 01 01 00 00 00] td [list 2010 01 01 00 00 00] t "text" rt "'Single quoted string'"] {
                 template::element::set_value $view_name $a $v
             }
         } error]
@@ -109,6 +109,7 @@ aa_register_case -cats {api db smoke} object_attributes_datatypes {
     aa_false "Object created from form" \
         [catch {set object_id [object::new_from_form \
                                    -object_view $view_name \
+                                   -object_id [db_nextval acs_object_id_seq] \
                                    -form $view_name]} error]
     object::delete -object_id $object_id
     aa_log $error

@@ -11,15 +11,6 @@ ad_library {
 
 namespace eval object {}
 
-ad_proc -private object::quote_attribute_values {
-    -array:required
-} {
-    upvar $array attributes
-    foreach attribute [array names attributes] {
-        set attributes($attribute) "'[DoubleApos $attributes($attribute)]'"
-    }
-}
-
 ad_proc -private object::split_attributes {
     -object_type:required
     -attributes_array:required
@@ -117,15 +108,9 @@ ad_proc -private object::new_inner {
         foreach name [array names our_attributes] {
             lappend name_list $name
             set __$name $our_attributes($name)
-            if {![string match "to_timestamp(*" [set __$name]]} {
-                lappend value_list  ":__${name}"
-            } else {
-                lappend value_list "[set __${name}]"
-            }
+            lappend value_list  ":__${name}"
         }
-        set SQL [db_map insert_object]
-
-        db_dml insert_object_q $SQL
+        db_dml insert_object {}
 
     } else {
         # error for now as we don't handle generics etc
@@ -181,8 +166,6 @@ ad_proc object::new {
 
     set attributes_array(object_type) $object_type
 
-#    object::quote_attribute_values -array attributes_array
-
     db_transaction {
         set object_id [object::new_inner \
                           -object_type $object_type \
@@ -219,7 +202,6 @@ ad_proc object::new_from_form {
     set attributes(creation_user) "[ad_conn user_id]"
     set attributes(creation_ip) "[ad_conn peeraddr]"
     set attributes(object_type) "$object_type"
-#    object::quote_attribute_values -array attributes
     db_transaction {
         object::new_inner \
             -object_type $object_type \
@@ -330,17 +312,11 @@ ad_proc object::update_inner {
 
         foreach name [array names our_attributes] {
             set __$name $our_attributes($name)
-            if {![string match "to_timestamp(*" [set __$name]]} {
-		lappend name_value_list  "$name = :__${name}"
-	    } else {
-		lappend name_value_list "$name = [set __${name}]"
-	    }
-
+            lappend name_value_list  "$name = :__${name}"
         }
 
         if { [info exists name_value_list] } {
-            set SQL [db_map update_object]
-            db_dml update_object_q $SQL
+            db_dml update_object {}
         }
 
     } else {
@@ -368,15 +344,13 @@ ad_proc object::update {
     array set attributes_array $attributes
 
     if { [ad_conn isconnected] } {
-	if { ![exists_and_not_null attributes_array(modifying_user)] } {
-	    set attributes_array(modifying_user) [ad_conn user_id]
-	} 
-	if { ![exists_and_not_null attributes_array(modifying_ip)] } {
-	    set attributes_array(modifying_ip) [ad_conn peeraddr]
-	}
+        if { ![exists_and_not_null attributes_array(modifying_user)] } {
+            set attributes_array(modifying_user) [ad_conn user_id]
+        } 
+        if { ![exists_and_not_null attributes_array(modifying_ip)] } {
+            set attributes_array(modifying_ip) [ad_conn peeraddr]
+        }
     }
-
-#    object::quote_attribute_values -array attributes_array
 
     set object_type [object::get_object_type -object_id $object_id]
 
