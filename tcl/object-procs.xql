@@ -1,15 +1,6 @@
 <?xml version="1.0"?>
 <queryset>
 
-  <fullquery name="object::new_inner.datatype">
-    <querytext>
-      select datatype
-      from acs_attributes a
-      where a.object_type=:object_type
-        and a.attribute_name=:name
-    </querytext>
-  </fullquery>
-
   <fullquery name="object::new_inner.insert_object">
     <querytext>
       insert into $object_type_info(table_name)
@@ -18,16 +9,6 @@
         ([join $value_list ,])
     </querytext>
   </fullquery>
-
-  <fullquery name="object::update_inner.datatype">
-    <querytext>
-      select datatype
-      from acs_attributes a
-      where a.object_type=:object_type
-        and a.attribute_name=:name
-    </querytext>
-  </fullquery>
-
 
   <fullquery name="object::update_inner.update_object">
     <querytext>
