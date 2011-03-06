@@ -10,7 +10,7 @@ ad_page_contract {
     ${object_view}_id:naturalnum,optional
 "
 
-ad_form -name $object_view \
+ad_form -name $object_view -export {return_url} \
   -form [form::form_part -object_view $object_view] \
   -select_query_name select_values \
   -on_request {
