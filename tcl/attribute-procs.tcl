@@ -92,6 +92,24 @@ ad_proc object_type::attribute::new {
     return $attribute_id
 }
 
+ad_proc object_type::attribute::edit {
+    -object_type:required
+    -attribute_name:required
+    -pretty_name:required
+    {-pretty_plural ""}
+} {
+
+    Edit an attribute of an object type. Only the pretty names can be edited.
+
+    @param object_type The type the new attribute belongs to.
+    @param attribute_name The name of the new attribute.
+    @param pretty_name The human-readable name for the new attribute.
+    @param pretty_plural Optional human-readable plural name for the new attribute.
+} {
+    db_dml edit_attribute {}
+    object_type::flush_cache -object_type $object_type
+}
+
 ad_proc object_type::attribute::delete {
     -object_type:required
     -attribute_name:required

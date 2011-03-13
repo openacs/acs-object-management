@@ -23,24 +23,36 @@ set datatype_options [db_list_of_lists get_datatypes {}]
 
 ad_form -name attribute_form -export {object_type} -form {
     {attribute_id:key}
-    {attribute_name:text {label "[_ acs-object-management.attribute_name]"} {html {size 30 maxlength 100}} {help_text "[_ acs-object-management.attribute_name_help]"}}
-    {pretty_name:text {label "[_ acs-object-management.pretty_name]"} {html {size 30 maxlength 100}} {help_text "[_ acs-object-management.attribute_pname_help]"}}
-    {pretty_plural:text,optional {label "[_ acs-object-management.pretty_plural]"} {html {size 30 maxlength 100}} {help_text "[_ acs-object-management.attribute_pplural_help]"}}
 }
 
-if {![ad_form_new_p -key attribute_id]} {
+if {[ad_form_new_p -key attribute_id]} {
     ad_form -extend -name attribute_form -form {
-	{datatype:text(inform) {label "[_ acs-object-management.datatype]"} {options $datatype_options} {help_text "[_ acs-object-management.datatype_help]"}}
+      {attribute_name:text {label "[_ acs-object-management.attribute_name]"} {html {size 30 maxlength 100}} {help_text "[_ acs-object-management.attribute_name_help]"}}
     }
 } else {
     ad_form -extend -name attribute_form -form {
-	{datatype:text(select) {label "[_ acs-object-management.datatype]"} {options $datatype_options} {help_text "[_ acs-object-management.datatype_help]"}}
+      {attribute_name:text(inform) {label "[_ acs-object-management.attribute_name]"}}
     }
 }
 
 ad_form -extend -name attribute_form -form {
-    {default_value:text(textarea),optional {label "[_ acs-object-management.attribute_default]"} {html {rows 3 cols 40}} {help_text "[_ acs-object-management.attribute_default_help]"}}
-} -new_request {
+    {pretty_name:text {label "[_ acs-object-management.pretty_name]"} {html {size 30 maxlength 100}} {help_text "[_ acs-object-management.attribute_pname_help]"}}
+    {pretty_plural:text,optional {label "[_ acs-object-management.pretty_plural]"} {html {size 30 maxlength 100}} {help_text "[_ acs-object-management.attribute_pplural_help]"}}
+}
+
+if {[ad_form_new_p -key attribute_id]} {
+    ad_form -extend -name attribute_form -form {
+	{datatype:text(select) {label "[_ acs-object-management.datatype]"} {options $datatype_options} {help_text "[_ acs-object-management.datatype_help]"}}
+        {default_value:text(textarea),optional {label "[_ acs-object-management.attribute_default]"} {html {rows 3 cols 40}} {help_text "[_ acs-object-management.attribute_default_help]"}}
+    }
+} else {
+    ad_form -extend -name attribute_form -form {
+	{datatype:text(inform) {label "[_ acs-object-management.datatype]"}}
+        {default_value:text(inform),optional {label "[_ acs-object-management.attribute_default]"}}
+    }
+}
+
+ad_form -extend -name attribute_form -form {} -new_request {
     set attribute_name ""
     set pretty_name ""
     set pretty_plural ""
@@ -66,12 +78,11 @@ ad_form -extend -name attribute_form -form {
         -create_column_p t
 } -edit_data {
 # Oh need to add an update function to the tcl API
-    dtype::edit_attribute \
-	-name [string tolower $attribute_name] \
+    object_type::attribute::edit \
+	-attribute_name [string tolower $attribute_name] \
 	-object_type $object_type \
 	-pretty_name $pretty_name \
-	-pretty_plural $pretty_plural \
-	-default_value $default_value
+	-pretty_plural $pretty_plural
 } -after_submit {
     lang::message::register -update_sync $default_locale acs-translations "${object_type}_$attribute_name" $pretty_name
     lang::message::register -update_sync $default_locale acs-translations "${object_type}_${attribute_name}s" $pretty_plural

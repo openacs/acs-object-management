@@ -115,7 +115,6 @@ aa_register_case -cats {api db smoke} object_attributes_datatypes {
     aa_log $error
     aa_false "Type Removed" [catch {
         object_type::delete -object_type $object_type \
-            -cascade_p t \
             -drop_table_p t
     } error]
     aa_log $error

@@ -290,15 +290,9 @@ begin
 
   perform acs_view__create_sql_view(replace(p_type, '':'', ''_'') || ''_v'');
 
-  -- Now fix all subtypes (really only necessary for the attributes view when an attribute
-  -- has been added or dropped, but there is no harm in doing it always).  The supertype
-  -- not equal to object_type bit is again due to the fact that acs_object has itself
-  -- as its supertype rather than null.
-
   for v_type_rec in select object_type
                     from acs_object_types
                     where supertype = p_type
-                      and supertype <> object_type
   loop
     perform acs_object_type__refresh_view(v_type_rec.object_type);
   end loop;

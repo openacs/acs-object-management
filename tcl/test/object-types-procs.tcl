@@ -40,7 +40,6 @@ aa_register_case -cats {api db smoke} object_type {
     if { [catch {object_type::delete \
                      -object_type object_type_test \
                      -drop_table_p t \
-                     -cascade_p t \
                      -drop_children_p t} error] } {
         aa_log_result fail "Attempt to delete type \"object_type_test\" failed: $error"
     } else {
@@ -64,7 +63,6 @@ aa_register_case -cats {api db smoke} object_type {
     if { [catch {object_type::delete \
                      -object_type object_type_test2 \
                      -drop_table_p t \
-                     -cascade_p t \
                      -drop_children_p t} error] } {
         aa_log_result fail "Attempt to delete type \"object_type_test2\" failed: $error"
     } else {
@@ -84,7 +82,6 @@ aa_register_case -cats {api db smoke} object_type {
     if { [catch {object_type::delete \
                      -object_type object_type_test3 \
                      -drop_table_p t \
-                     -cascade_p t \
                      -drop_children_p t} error] } {
         aa_log_result fail "Attempt to delete type \"object_type_test3\" failed: $error"
     } else {

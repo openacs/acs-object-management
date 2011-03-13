@@ -91,7 +91,6 @@ ad_proc -public object_type::new {
 
 ad_proc -public object_type::delete {
     -object_type:required
-    {-cascade_p t}
     {-drop_table_p f}
     {-drop_children_p f}
 } {
@@ -100,13 +99,12 @@ ad_proc -public object_type::delete {
     which depend on it.
 
     @param object_type The object type to delete.
-    @param cascade_p If true, append "cascade" to the SQL drop table command.
+    @param cascade_p If true, delete the type's objects.
     @param drop_table_p If true (recommended) drop the table associated with the object type.
     @param drop_children_p If true (recommended) drop all subtypes dependent on this type.
 } {
     set var_list [list \
         [list object_type $object_type] \
-        [list cascade_p $cascade_p] \
         [list drop_table_p $drop_table_p] \
         [list drop_children_p $drop_children_p]]
     package_exec_plsql -var_list $var_list acs_object_type drop_type
