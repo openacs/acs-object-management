@@ -10,6 +10,7 @@ ad_library {
 }
 
 namespace eval object {}
+namespace eval object::form {}
 
 ad_proc -private object::split_attributes {
     -object_type:required
@@ -54,6 +55,8 @@ ad_proc -private object::split_attributes {
 ad_proc -private object::new_inner {
     -object_type:required
     -object_id:required
+    {-parent_id ""}
+    {-item_id ""}
     -attributes:required
 } {
 
@@ -62,14 +65,21 @@ ad_proc -private object::new_inner {
     supertypes as it goes.  object::new wraps the outer call in a transaction to
     guarantee that object creation is atomic.
 
+    The content repository hacks are in here because adding the missing attributes
+    might well screw up the insert view that's created by the package, and I don't
+    care to go screwing around with that part of core at this point in time.
+
     @param object_type The type we're creating.
     @param object_id The id of the object we're creating.  If empty, a new object_id
            will be created.
+    @param parent_id content_item hack due to the CR not defining parent_id as an
+           attribute
     @param attributes The attribute values for the new object in array get format.
 
     @return The object_id of the new object.
 } {
 
+ns_log Notice "Huh? object_type: $object_type attributes: $attributes"
     array set attributes_array $attributes
   
     object_type::get -object_type $object_type -array object_type_info
@@ -81,30 +91,26 @@ ad_proc -private object::new_inner {
         -type_attributes_array our_attributes \
         -supertype_attributes_array supertype_attributes
 
-    # If this conditional looks weird to you, it's because the supertype of acs_object is
-    # acs_object, not null (boo, hiss, aD!)
-
-    if { $object_type_info(supertype) ne $object_type } {
+    if { $object_type_info(supertype) ne "" } {
         set object_id \
             [object::new_inner \
                 -object_type $object_type_info(supertype) \
                 -object_id $object_id \
+                -parent_id $parent_id \
+                -item_id $item_id \
                 -attributes [array get supertype_attributes]]
     } else {
         if { $object_id eq "" } {
             set object_id [db_nextval acs_object_id_seq]
-        }
-        if { [llength [array names supertype_attributes]] > 0 } {
-            # Internal error check - if we're creating an acs_object, it has no supertype
-            # therefore should have no supertype_attributes.
-            ns_log Error "supertype_attributes should be empty, value: [array get supertype_attributes]"
-            return -code error "Internal error - supertype_attributes should be empty"
         }
     }
 
     if { $object_type_info(table_name) ne "" } {
 
         set our_attributes($id_column) $object_id
+        if { $parent_id ne "" && $object_type eq "content_item"  } {
+            set our_attributes(parent_id) $parent_id
+        }
         foreach name [array names our_attributes] {
             lappend name_list $name
             set __$name $our_attributes($name)
@@ -171,42 +177,6 @@ ad_proc object::new {
                           -object_type $object_type \
                           -object_id $object_id \
                           -attributes [array get attributes_array]]
-    }
-    return $object_id
-}
-
-ad_proc object::new_from_form {
-    -object_view:required
-    -object_id
-    -form
-} {
-} {
-
-    if { ![info exists form] } {
-        set form $object_view
-    }
-
-    if { ![info exists object_id] } {
-        set object_id [template::element::get_value $form \
-                          [template::element::get_value $form __key]]
-    }
-
-    form::get_attributes \
-        -object_view $object_view \
-        -array attributes
-
-    set object_type [object_view::get_element \
-                        -object_view $object_view \
-                        -element object_type]
-
-    set attributes(creation_user) "[ad_conn user_id]"
-    set attributes(creation_ip) "[ad_conn peeraddr]"
-    set attributes(object_type) "$object_type"
-    db_transaction {
-        object::new_inner \
-            -object_type $object_type \
-            -object_id $object_id \
-            -attributes [array get attributes]
     }
     return $object_id
 }
@@ -294,18 +264,11 @@ ad_proc object::update_inner {
     # If this conditional looks weird to you, it's because the supertype of acs_object is
     # acs_object, not null (boo, hiss, aD!)
 
-    if { $object_type_info(supertype) ne $object_type } {
+    if { $object_type_info(supertype) ne "" } {
         object::update_inner \
             -object_type $object_type_info(supertype) \
             -object_id $object_id \
             -attributes [array get supertype_attributes]
-    } else {
-        if { [llength [array names supertype_attributes]] > 0 } {
-            # Internal error check - if we're creating an acs_object, it has no supertype
-            # therefore should have no supertype_attributes.
-            ns_log Error "supertype_attributes should be empty, value: [array get supertype_attributes]"
-            return -code error "Internal error - supertype_attributes should be empty"
-        }
     }
 
     if { $object_type_info(table_name) ne "" } {
@@ -362,7 +325,64 @@ ad_proc object::update {
     }
 }
 
-ad_proc object::update_from_form {
+ad_proc object::form::form_part {
+    -object_view:required
+    {-extend:boolean "f"}
+} {
+
+    Returns an ad_form snippet meant to be embedded in the "-form" part of the call.
+
+    @param object_view The object view whose form we should render.
+    @param extend      Extend an existing form.
+
+} {
+    set form_part [list]
+    if {!$extend_p} {
+        lappend form_part [list ${object_view}_id:key(acs_object_id_seq)]
+    }
+    lappend form_part [list object_view:text(hidden) [list value $object_view]]
+    foreach attribute_id [object_view::get_attribute_ids -object_view $object_view] {
+        lappend form_part [form::element -object_view $object_view -attribute_id $attribute_id]
+    }
+    return $form_part
+}
+ad_proc object::form::new {
+    -object_view:required
+    -object_id
+    -form
+} {
+} {
+
+    if { ![info exists form] } {
+        set form $object_view
+    }
+
+    if { ![info exists object_id] } {
+        set object_id [template::element::get_value $form \
+                          [template::element::get_value $form __key]]
+    }
+
+    form::get_attributes \
+        -object_view $object_view \
+        -array attributes
+
+    set object_type [object_view::get_element \
+                        -object_view $object_view \
+                        -element object_type]
+
+    set attributes(creation_user) "[ad_conn user_id]"
+    set attributes(creation_ip) "[ad_conn peeraddr]"
+    set attributes(object_type) "$object_type"
+    db_transaction {
+        object::new_inner \
+            -object_type $object_type \
+            -object_id $object_id \
+            -attributes [array get attributes]
+    }
+    return $object_id
+}
+
+ad_proc object::form::update {
     -object_view:required
     -object_id
     -form

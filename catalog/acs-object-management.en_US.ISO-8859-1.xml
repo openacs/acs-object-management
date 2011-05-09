@@ -34,7 +34,7 @@
   <msg key="Delete">Delete</msg>
   <msg key="delete">delete</msg>
   <msg key="delete_checked_attributes">Delete checked attributes</msg>
-  <msg key="dynamic_types">Dynamic Types</msg>
+  <msg key="dynamic">Dynamic</msg>
   <msg key="edit_form">Edit Form Name</msg>
   <msg key="edit_widget">edit widget</msg>
   <msg key="edit_widget_params">Edit widget parameters</msg>
@@ -60,6 +60,8 @@
   <msg key="node_element_must_have">node 'element' must have either a 'name' attribute or an 'attribute' attribute.</msg>
   <msg key="object_type">Object Type</msg>
   <msg key="object_view">Object View</msg>
+  <msg key="object_view_content_type">Object view is based on a content type</msg>
+  <msg key="object_view_not_content_type">Object view is not based on a content type</msg>
   <msg key="param_name">Parameter</msg>
   <msg key="param_one">Parameter &quot;%param%&quot;</msg>
   <msg key="param_source">Source</msg>

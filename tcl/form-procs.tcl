@@ -10,28 +10,6 @@ ad_library {
 
 namespace eval form {}
 
-ad_proc form::form_part {
-    -object_view:required
-    {-extend:boolean "f"}
-} {
-
-    Returns an ad_form snippet meant to be embedded in the "-form" part of the call.
-
-    @param object_view The object view whose form we should render.
-    @param extend      Extend an existing form.
-
-} {
-    set form_part [list]
-    if {!$extend_p} {
-        lappend form_part [list ${object_view}_id:key(acs_object_id_seq)]
-    }
-    lappend form_part [list object_view:text(hidden) [list value $object_view]]
-    foreach attribute_id [object_view::get_attribute_ids -object_view $object_view] {
-        lappend form_part [form::element -object_view $object_view -attribute_id $attribute_id]
-    }
-    return $form_part
-}
-
 ad_proc form::get_attributes {
     -object_view:required
     -array:required

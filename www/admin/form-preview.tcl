@@ -9,7 +9,7 @@ ad_page_contract {
 }
 
 ad_form -name object_view \
-  -form [form::form_part -object_view $object_view] \
+  -form [object::form::form_part -object_view $object_view] \
   -after_submit {
     ad_returnredirect [export_vars -base form {object_view}]
     ad_script_abort

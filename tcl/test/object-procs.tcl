@@ -95,7 +95,7 @@ aa_register_case -cats {api db smoke} object_attributes_datatypes {
     aa_false "Form created" \
         [catch {
 
-            set form_part [form::form_part -object_view $view_name]
+            set form_part [object::form::form_part -object_view $view_name]
             aa_log $form_part
             ad_form -name $view_name \
                 -form $form_part
@@ -107,7 +107,7 @@ aa_register_case -cats {api db smoke} object_attributes_datatypes {
     aa_log $error
     
     aa_false "Object created from form" \
-        [catch {set object_id [object::new_from_form \
+        [catch {set object_id [object::form::new \
                                    -object_view $view_name \
                                    -object_id [db_nextval acs_object_id_seq] \
                                    -form $view_name]} error]

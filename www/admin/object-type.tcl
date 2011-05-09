@@ -14,6 +14,11 @@ set page_title $type_info(pretty_name)
 set context [list [list . "Object Types"] $page_title]
 set return_url [ad_conn url]?[ad_conn query]
 
+set actions ""
+if { $type_info(dynamic_p) } {
+    set actions [list "[_ acs-object-management.add_attribute]" [export_vars -base attribute {object_type}] "[_ acs-object-management.add_attribute]"]
+}
+
 list::create \
     -name attributes \
     -caption [_ acs-object-management.attributes] \
@@ -21,11 +26,18 @@ list::create \
     -key attribute_id \
     -pass_properties {
         object_type
-    } -actions [list "[_ acs-object-management.add_attribute]" [export_vars -base attribute {object_type}] "[_ acs-object-management.add_attribute]"] \
+    } -actions $actions \
     -elements {
         pretty_name {
             label "[_ acs-object-management.attribute]"
-            link_url_eval $attribute_url
+            display_template "
+              <if @attributes.attribute_url@ ne \"\">
+                <a href=\"@attributes.attribute_url@\" title=\"@attributes.pretty_name@\">
+              </if>
+              @attributes.pretty_name@
+              <if @attributes.attribute_url@ ne \"\">
+                </a>
+              </if>"
         }
         datatype {
             label "[_ acs-object-management.datatype]"
@@ -33,9 +45,11 @@ list::create \
         action {
             label "[_ acs-object-management.Action]"
             display_template "
+              <if @attributes.attribute_url@ ne \"\">
                 <a class=\"button\" href=\"@attributes.delete_url@\" title=\"[_ acs-object-management.delete]\">
                   [_ acs-object-management.delete]
-                </a>"
+                </a>
+              </if>"
         }
     } -filters {
         object_type {}
@@ -43,7 +57,7 @@ list::create \
 
 db_multirow -cache_pool acs_metadata -cache_key t::${object_type}::get_attributes \
     -extend { attribute_url delete_url} attributes get_attributes {} {
-    set attribute_url [export_vars -base attribute {attribute_id object_type}]
+    set attribute_url [expr {$type_info(dynamic_p) ? [export_vars -base attribute {attribute_id object_type}] : "" }]
     set delete_url [export_vars -base attribute-delete {object_type attribute_name}]
 }
 

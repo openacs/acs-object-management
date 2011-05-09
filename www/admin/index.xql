@@ -5,9 +5,8 @@
 <fullquery name="select_object_types">
   <querytext>
 
-    select object_type, pretty_name
+    select object_type, pretty_name, dynamic_p
     from acs_object_types
-    where dynamic_p = 't'
     $orderby_clause
 
   </querytext>

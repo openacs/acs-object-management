@@ -10,7 +10,7 @@ ad_page_contract {
     {orderby "pretty_name,asc"}
 }
 
-set page_title "[_ acs-object-management.dynamic_types]"
+set page_title "[_ acs-object-management.types]"
 set context [list $page_title]
 
 list::create \
@@ -19,7 +19,7 @@ list::create \
     -multirow object_types \
     -key object_type \
     -actions [list "[_ acs-object-management.add_type]" [export_vars -base object-type-add] "[_ acs-object-management.add_type]"] \
-    -row_pretty_plural "[_ acs-object-management.dynamic_types]" \
+    -row_pretty_plural "[_ acs-object-management.types]" \
     -elements {
         pretty_name {
             label "[_ acs-object-management.pretty_name]"
@@ -30,12 +30,18 @@ list::create \
             label "[_ acs-object-management.object_type]"
             orderby "object_type"
         }
+        dynamic_p {
+            label "[_ acs-object-management.dynamic]"
+            orderby "dynamic_p"
+        }
         action {
             label "[_ acs-object-management.Action]"
             display_template "
-                <a class=\"button\" href=\"@object_types.delete_url@\" title=\"[_ acs-object-management.delete]\">
-                  [_ acs-object-management.delete]
-                </a>"
+                <if @object_types.dynamic_p@>
+                  <a class=\"button\" href=\"@object_types.delete_url@\" title=\"[_ acs-object-management.delete]\">
+                    [_ acs-object-management.delete]
+                  </a>
+                </if>"
         }
 
     }

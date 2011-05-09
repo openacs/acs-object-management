@@ -21,6 +21,7 @@
         <requires url="acs-kernel" version="5.7.0d4"/>
 
         <callbacks>
+            <callback type="after-install"  proc="acs_object_management::apm::after_install"/>
         </callbacks>
         <parameters>
             <parameter datatype="number"  min_n_values="1"  max_n_values="1"  name="DBCacheSize"  default="50000" description="Size of cache used to hold object metadata"/>
