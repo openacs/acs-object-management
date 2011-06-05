@@ -149,7 +149,7 @@ begin
                     and ot1.tree_sortkey between ot2.tree_sortkey and tree_right(ot2.tree_sortkey)
                   order by ot2.tree_sortkey desc
   loop
-    if v_join_rec.table_name is not null then
+    if v_join_rec.table_name is not null and table_exists(v_join_rec.table_name) then
 
       if not v_tree_sortkey_found_p and column_exists(v_join_rec.table_name, ''tree_sortkey'') then
         v_cols := v_cols || '','' || v_join_rec.table_name || ''.tree_sortkey'';
