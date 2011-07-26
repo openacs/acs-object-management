@@ -163,9 +163,8 @@ ad_proc object_type::attribute::get_attribute_id {
 
     @return The attribute_id of the given attribute.
 } {
-    upvar $array local
     return [db_string \
-               -cache_pool acs_metadata \
-               -cache_key t::${object_type}::attribute::get_attribute_id \
-               get_attribute_id]
+                -cache_pool acs_metadata \
+                -cache_key t::${object_type}::a::${attribute_name}::get_attribute_id \
+                get_attribute_id {}]
 }
