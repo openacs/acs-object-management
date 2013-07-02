@@ -20,6 +20,7 @@
       from acs_form_widget_params afwp, acs_view_attribute_widget_params aovawp,
         acs_view_attribute_widgets avaw
       where avaw.object_view = :object_view
+        and aovawp.object_view = :object_view
         and aovawp.attribute_id = :attribute_id
         and afwp.param_id = aovawp.param_id
       union
