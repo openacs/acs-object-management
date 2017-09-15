@@ -37,7 +37,7 @@ list::create \
         action {
             label "[_ acs-object-management.Action]"
             display_template "
-                <if @object_types.dynamic_p@>
+                <if @object_types.dynamic_p;literal@ true>
                   <a class=\"button\" href=\"@object_types.delete_url@\" title=\"[_ acs-object-management.delete]\">
                     [_ acs-object-management.delete]
                   </a>
