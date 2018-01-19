@@ -13,3 +13,5 @@ ad_page_contract {
         -attribute_id $attribute_id
 
 ad_returnredirect $return_url
+ad_script_abort
+
