@@ -7,7 +7,7 @@ ad_page_contract {
 
     This is a derivative of the dynamic types package.
 } {
-    {orderby "pretty_name,asc"}
+    {orderby:token "pretty_name,asc"}
 }
 
 set page_title "[_ acs-object-management.types]"
