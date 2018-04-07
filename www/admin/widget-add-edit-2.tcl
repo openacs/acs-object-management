@@ -38,7 +38,7 @@ db_multirow -unclobber params get_params {} {
     set optional_flag [expr { $required_p ? "" : ",optional" }]
     set param [lang::util::localize $param]
     
-    if {[lsearch -exact {value values options} $param] > -1} {
+    if {$param in {value values options}} {
         set param_source_options {{#acs-object-management.literal# literal}}
         if { $tcl_allowed_p } {
             lappend param_source_options {#acs-object-management.tcl_proc# eval}
@@ -75,7 +75,7 @@ ad_form -extend -name widget_register -on_request {
         set param [template::multirow get params $i param]
         set value [template::multirow get params $i value]
         ad_set_element_value -element $param $value            
-        if {[lsearch -exact {value values options} $param] > -1} {
+        if {$param in {value values options}} {
             set param_source [template::element::get_value widget_register ${param}_source]
             if {$param_source eq "literal"} {
                 ad_set_element_value -element ${param}_literal $value
@@ -93,7 +93,7 @@ ad_form -extend -name widget_register -on_request {
         set param [template::multirow get params $i param]        
         set param_id [template::multirow get params $i param_id]
         set param_source literal
-        if {[lsearch -exact {value values options} $param] > -1} {
+        if {$param in {value values options}} {
             set param_source [template::element::get_value widget_register ${param}_source]
             if {$param_source eq "literal"} {
                 set value [template::element::get_value widget_register ${param}_literal]

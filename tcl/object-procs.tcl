@@ -42,7 +42,7 @@ ad_proc -private object::split_attributes {
     set type_attribute_names [object_type::get_attribute_names \
                                  -object_type $object_type]
     foreach attribute_name [array names local_attributes_array] {
-        if { [lsearch -exact $type_attribute_names $attribute_name] == -1 } {
+        if {$attribute_name ni $type_attribute_names} {
             set local_supertype_attributes_array($attribute_name) \
                 $local_attributes_array($attribute_name)
         } else {
