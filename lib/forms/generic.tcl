@@ -15,7 +15,7 @@ ad_form -name $object_view -export {return_url} \
   -select_query_name select_values \
   -on_request {
     if { [content::type::is_content_type -object_type \
-             [object_view::get_element -object_view $object_view -element object_type] } {
+             [object_view::get_element -object_view $object_view -element object_type]] } {
         ad_return_complaint 1 [_ object_view_content_type]
         ad_script_abort
     }
