@@ -363,6 +363,7 @@ ad_proc object::form::new {
     }
 
     form::get_attributes \
+        -form $form \
         -object_view $object_view \
         -array attributes
 
