@@ -137,7 +137,7 @@ ad_proc object::new {
 
     1. We don't call the object type's "new" function, if one exists.  This package
        doesn't create them, and in general I'd like to move away from them as it's
-       one of the things that makes supporting both oracle and postgresql burdensome.
+       one of the things that makes supporting both oracle and PostgreSQL burdensome.
 
     2. This means that this function will fail if an object type has a "new" function
        that does tricky things beyond simply creating the supertype object, then
